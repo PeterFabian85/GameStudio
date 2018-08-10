@@ -1,75 +1,74 @@
 package sk.tsystems.gamestudio.entity;
 
 import java.io.Serializable;
-import java.security.Timestamp;
 import java.util.Date;
 
-public class Score implements Serializable, Comparable<Score>{
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
+public class Score implements Serializable {
+
+    @Id
+    @GeneratedValue
+	private long id;
+	
 	private String game;
-	private String player;
-	private int points;
-	private Date playedOn;
+    private String username;
+    private int points;
+    private Date playedOn;
 
-	public Score() {
-	}
+    public Score() {
+    }
 
-	public Score(String game, String player, int points, Date playedOn) {
-		this.player = player;
-		this.points = points;
-		this.playedOn = playedOn;
-		this.game = game;
-	}
-	 public String getGame() {
-	        return game;
-	    }
+    public Score(String game, String username, int points, Date playedOn) {
+        this.game = game;
+        this.username = username;
+        this.points = points;
+        this.playedOn = playedOn;
+    }
 
-	    public void setGame(String game) {
-	        this.game = game;
-	    }
-	   public Date getPlayedOn() {
-		return playedOn;
-	}
+    public String getGame() {
+        return game;
+    }
 
+    public void setGame(String game) {
+        this.game = game;
+    }
 
+    public String getUsername() {
+        return username;
+    }
 
-	public String getPlayer() {
-		return player;
-	}
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-	public void setPlayer(String player) {
-		this.player = player;
-	}
+    public int getPoints() {
+        return points;
+    }
 
-	public int getPoints() {
-		return points;
-	}
+    public void setPoints(int points) {
+        this.points = points;
+    }
 
-	public void setPoints(int points) {
-		this.points = points;
-	}
+    public Date getPlayedOn() {
+        return playedOn;
+    }
 
-	public Date getWhen() {
-		return playedOn;
-	}
+    public void setPlayedOn(Date playedOn) {
+        this.playedOn = playedOn;
+    }
 
-	public void setWhen(Date playedOn) {
-		this.playedOn = playedOn;
-	}
-
-	@Override
+    @Override
     public String toString() {
         return "Score{" +
                 "game='" + game + '\'' +
-                ", username='" + player + '\'' +
+                ", username='" + username + '\'' +
                 ", points=" + points +
                 ", playedOn=" + playedOn +
                 '}';
     }
-	@Override
-    public int compareTo(Score s) {
-        return s.getPoints() - this.points;
-    }
 
-
-
-}
+ }

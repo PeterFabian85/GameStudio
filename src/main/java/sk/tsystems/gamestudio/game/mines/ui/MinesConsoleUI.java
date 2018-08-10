@@ -1,33 +1,37 @@
-package sk.tsystems.gamestudio.game.mines.consoleUI;
+package sk.tsystems.gamestudio.game.mines.ui;
 
 import java.util.Date;
 import java.util.Scanner;
 
-import sk.tsystems.gamestudio.entity.Score;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import sk.tsystems.gamestudio.entity.Score;
+import sk.tsystems.gamestudio.game.Game;
 import sk.tsystems.gamestudio.game.mines.core.Clue;
 import sk.tsystems.gamestudio.game.mines.core.Field;
 import sk.tsystems.gamestudio.game.mines.core.GameState;
 import sk.tsystems.gamestudio.game.mines.core.Mine;
 import sk.tsystems.gamestudio.game.mines.core.Tile;
-import sk.tsystems.gamestudio.service.ScoreService.ScoreService;
-import sk.tsystems.gamestudio.service.ScoreService.ScoreServiceFile;
-import sk.tsystems.gamestudio.service.ScoreService.ScoreServiceJDBC;
 
-public class ConsoleUI {
+import sk.tsystems.gamestudio.service.ScoreService.ScoreService;
+
+public class MinesConsoleUI implements Game {
 
 	private Field field;
-	private ScoreService scoreService = new ScoreServiceJDBC();
+	
+	@Autowired
+	private ScoreService scoreService;
+	
 	private int score;
 	private long time;
 	private long initialTime;
-	
-	public ConsoleUI(Field field) {
+
+	public MinesConsoleUI(Field field) {
 		this.field = field;
 	}
 
 	public void play() {
-		
+
 		printScores();
 		initialTime = System.currentTimeMillis();
 		do {
@@ -35,35 +39,40 @@ public class ConsoleUI {
 			processInput();
 		} while (field.getState() == GameState.PLAYING);
 		printField(field);
-		
-		if(field.getState()==GameState.SOLVED) {
+
+		if (field.getState() == GameState.SOLVED) {
 			System.out.println("Game Solved!");
-			time = (System.currentTimeMillis()-initialTime)/1000;
-			score = (int)time;
-			System.out.println("You solved the game in " + (score) + " sec");
-			scoreService.addScore(new Score("Mines",System.getProperty("user.name"), score , new Date()));
-		}else if(field.getState()==GameState.FAILED)
+			time = (System.currentTimeMillis() - initialTime) / 1000;
+			score = 500 - (int) time;
+			System.out.println("You solved the game in " + (time) + " sec. Score = " + score);
+			scoreService.addScore(new Score("Mines",System.getProperty("user.name"), score, new Date()));
+		} else if (field.getState() == GameState.FAILED)
 			System.out.println("Game FAILED!");
 
+	}
+	
+	@Override
+	public String getName() {
+		return "Minesweeper";
 	}
 
 	private void processInput() {
 		System.out.println("Enter input:");
 		Scanner scanner = new Scanner(System.in);
 		String line = scanner.nextLine().toUpperCase().trim();
-		
-		if("X".equals(line))
+
+		if ("X".equals(line))
 			System.exit(0);
-		if(line.matches("[OM][A-I][1-9]")) {
-			int row = line.charAt(1)-'A';
-			int column = line.charAt(2)-'1';
-			if(line.startsWith("O"))
+		if (line.matches("[OM][A-I][1-9]")) {
+			int row = line.charAt(1) - 'A';
+			int column = line.charAt(2) - '1';
+			if (line.startsWith("O"))
 				field.openTile(row, column);
 			else
 				field.markTile(row, column);
 		} else
 			System.out.println("Invalid input");
-					
+
 	}
 
 	private static void printField(Field field) {
@@ -107,8 +116,8 @@ public class ConsoleUI {
 		System.out.println("-----------------------------");
 		System.out.println("No.  Player             Score");
 		System.out.println("-----------------------------");
-		for(Score score : scoreService.getBestScores("Mines")) {
-			System.out.printf("%3d. %-16s %5d\n", index, score.getPlayer(), score.getPoints());
+		for (Score score : scoreService.getBestScores("Mines")) {
+			System.out.printf("%3d. %-16s %5d\n", index, score.getUsername(), score.getPoints());
 			index++;
 		}
 		System.out.println("-----------------------------");
